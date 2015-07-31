@@ -11,7 +11,7 @@ Turn endpoint definitions into first class citizens.
 ## Roadmap
 
 - [x] One endpoint, whose path is fixed, e.g. `GET /foo`, with a description
-- [ ] Routing
+- [x] Routing
 - [ ] Reverse routing
 - [ ] Abstract documentation
 - [ ] Several HTTP verbs (`GET`, `POST`)

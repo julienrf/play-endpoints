@@ -10,7 +10,7 @@ class Loader extends ApplicationLoader {
 
       val example = new Example
 
-      def router: Router = Router.empty
+      def router: Router = Endpoint.router(example.foo.endpoint)
 
     }.application
 }
