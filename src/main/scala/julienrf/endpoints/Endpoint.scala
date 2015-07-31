@@ -8,33 +8,36 @@ case class DocumentedEndpoint(description: String, endpoint: Endpoint)
 
 case class Endpoint(method: Method, path: String, handler: Handler)
 
+sealed trait Endpoints
+
 /** HTTP methods */
 sealed trait Method
 case object Get extends Method
 case object Post extends Method
 
+object Method {
+  def toString(method: Method): String =
+    method match {
+      case Get => "GET"
+      case Post => "POST"
+    }
+}
+
 object Endpoint {
 
-  def router(endpoint: Endpoint): Router =
+  def router(endpoints: Seq[Endpoint]): Router =
     Router.from(Function.unlift { (requestHeader: RequestHeader) =>
-      if (requestHeader.path == endpoint.path) Some(endpoint.handler)
-      else None
+      endpoints
+        .find(endpoint => Method.toString(endpoint.method) == requestHeader.method && endpoint.path == requestHeader.path)
+        .map(_.handler)
     })
 
   def reverseRouter(endpoint: Endpoint): String = endpoint.path
 
-  def documentation(documentedEndpoint: DocumentedEndpoint): Html = {
-
-    def httpMethodName(method: Method): String =
-      method match {
-        case Get => "GET"
-        case Post => "POST"
-      }
-
+  def documentation(documentedEndpoint: DocumentedEndpoint): Html =
     html"""
-      <h2>${httpMethodName(documentedEndpoint.endpoint.method)} ${documentedEndpoint.endpoint.path}</h2>
+      <h2>${Method.toString(documentedEndpoint.endpoint.method)} ${documentedEndpoint.endpoint.path}</h2>
       <p>${documentedEndpoint.description}</p>
     """
-  }
 
 }

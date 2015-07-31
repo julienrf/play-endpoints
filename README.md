@@ -16,7 +16,7 @@ Turn endpoint definitions into first class citizens.
 - [x] Abstract documentation
 - [x] HTML documentation
 - [x] Several HTTP verbs (`GET`, `POST`)
-- [ ] Two endpoints, with fixed paths, e.g. `GET /foo` and `GET /bar`
+- [x] Two endpoints, with fixed paths, e.g. `GET /foo` and `GET /bar`
 - [ ] Query string _parameters_ of type `String`, with a description
 - [ ] Path _parameters_
 - [ ] Parameters of any type

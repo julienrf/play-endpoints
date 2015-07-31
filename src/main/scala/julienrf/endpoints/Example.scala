@@ -5,12 +5,29 @@ import play.twirl.api.StringInterpolation
 
 object Example extends Controller {
 
-  val fooHandler = Action(Ok(html"<a href='${Endpoint.reverseRouter(foo.endpoint)}'>reverse routed link to the 'foo' endpoint</a>"))
-  val foo: DocumentedEndpoint = DocumentedEndpoint("My first endpoint", Endpoint(Get, "/foo", fooHandler))
+  lazy val foo: DocumentedEndpoint =
+    DocumentedEndpoint(
+      "My first endpoint",
+      Endpoint(Get, "/foo",
+        Action(
+          Ok(html"<a href='${Endpoint.reverseRouter(foo.endpoint)}'>reverse routed link to the 'foo' endpoint</a> and a link to the <a href='${Endpoint.reverseRouter(doc.endpoint)}'>doc</a>")
+        )
+      )
+    )
 
-  val docHandler = Action {
-    Ok(html"<h1>Example Documentation</h1>${Endpoint.documentation(foo)}")
-  }
-  val doc: DocumentedEndpoint = DocumentedEndpoint("Documentation", Endpoint(Get, "/doc", docHandler))
+  lazy val doc: DocumentedEndpoint =
+    DocumentedEndpoint(
+      "Documentation",
+      Endpoint(Get, "/doc",
+        Action {
+          Ok(html"<h1>Example Documentation</h1>${endpoints.map(Endpoint.documentation)}")
+        }
+      )
+    )
+
+  lazy val form =
+    DocumentedEndpoint("Form submission", Endpoint(Post, "/submit", Action(NotImplemented)))
+
+  lazy val endpoints = Seq(foo, doc, form)
 
 }

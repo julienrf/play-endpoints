@@ -8,7 +8,7 @@ class Loader extends ApplicationLoader {
   def load(context: Context): Application =
     new BuiltInComponentsFromContext(context) {
 
-      def router: Router = Endpoint.router(Example.doc.endpoint)
+      def router: Router = Endpoint.router(Example.endpoints.map(_.endpoint))
 
     }.application
 }
