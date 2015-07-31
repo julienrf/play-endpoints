@@ -13,9 +13,9 @@ Turn endpoint definitions into first class citizens.
 - [x] One endpoint, whose path is fixed, e.g. `GET /foo`, with a description
 - [x] Routing
 - [x] Reverse routing
-- [ ] Abstract documentation
+- [x] Abstract documentation
+- [x] HTML documentation
 - [ ] Several HTTP verbs (`GET`, `POST`)
-- [ ] HTML documentation
 - [ ] Two endpoints, with fixed paths, e.g. `GET /foo` and `GET /bar`
 - [ ] Query string _parameters_ of type `String`, with a description
 - [ ] Path _parameters_

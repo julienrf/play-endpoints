@@ -2,6 +2,7 @@ package julienrf.endpoints
 
 import play.api.mvc.{Handler, Results, Action, RequestHeader}
 import play.api.routing.Router
+import play.twirl.api.{Html, StringInterpolation}
 
 case class DocumentedEndpoint(description: String, endpoint: Endpoint)
 
@@ -16,5 +17,11 @@ object Endpoint {
     })
 
   def reverseRouter(endpoint: Endpoint): String = endpoint.path
+
+  def documentation(documentedEndpoint: DocumentedEndpoint): Html =
+    html"""
+      <h2>GET ${documentedEndpoint.endpoint.path}</h2>
+      <p>${documentedEndpoint.description}</p>
+    """
 
 }
