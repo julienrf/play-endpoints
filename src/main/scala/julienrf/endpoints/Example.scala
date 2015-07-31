@@ -5,29 +5,31 @@ import play.twirl.api.StringInterpolation
 
 object Example extends Controller {
 
-  lazy val foo: DocumentedEndpoint =
-    DocumentedEndpoint(
-      "My first endpoint",
-      Endpoint(Get, "/foo",
-        Action(
-          Ok(html"<a href='${Endpoint.reverseRouter(foo.endpoint)._2}'>reverse routed link to the 'foo' endpoint</a> and a link to the <a href='${Endpoint.reverseRouter(doc.endpoint)._2}'>doc</a>")
-        )
-      )
+  lazy val foo: FixedPath =
+    FixedPath(
+      "My first endpoint", Get, "/foo",
+      Action {
+        Ok(html"<a href='${foo.reverse._2}'>foo</a>, <a href='${doc.reverse._2}'>doc</a>, <a href='${hello.reverse("Julien")._2}'>Hello Julien</a>")
+      }
     )
 
-  lazy val doc: DocumentedEndpoint =
-    DocumentedEndpoint(
-      "Documentation",
-      Endpoint(Get, "/doc",
-        Action {
-          Ok(html"<h1>Example Documentation</h1>${endpoints.map(Endpoint.documentation)}")
-        }
-      )
+  lazy val doc: FixedPath =
+    FixedPath(
+      "Documentation", Get, "/doc",
+      Action {
+        Ok(html"<h1>Example Documentation</h1>${endpoints.map(Endpoint.documentation)}")
+      }
     )
 
   lazy val form =
-    DocumentedEndpoint("Form submission", Endpoint(Post, "/submit", Action(NotImplemented)))
+    FixedPath("Form submission", Post, "/submit", Action(NotImplemented))
 
-  lazy val endpoints = Seq(foo, doc, form)
+  lazy val hello =
+    EndpointQS(
+      "Say hello to someone", Get, "/hello", QueryString("name", "Name of the person to greet"),
+      name => Action(Ok(html"<h1>Hello $name</h1>"))
+    )
+
+  lazy val endpoints = Seq(foo, hello, doc, form)
 
 }
