@@ -6,7 +6,12 @@ import play.twirl.api.{Html, StringInterpolation}
 
 case class DocumentedEndpoint(description: String, endpoint: Endpoint)
 
-case class Endpoint(path: String, handler: Handler)
+case class Endpoint(method: Method, path: String, handler: Handler)
+
+/** HTTP methods */
+sealed trait Method
+case object Get extends Method
+case object Post extends Method
 
 object Endpoint {
 
@@ -18,10 +23,18 @@ object Endpoint {
 
   def reverseRouter(endpoint: Endpoint): String = endpoint.path
 
-  def documentation(documentedEndpoint: DocumentedEndpoint): Html =
+  def documentation(documentedEndpoint: DocumentedEndpoint): Html = {
+
+    def httpMethodName(method: Method): String =
+      method match {
+        case Get => "GET"
+        case Post => "POST"
+      }
+
     html"""
-      <h2>GET ${documentedEndpoint.endpoint.path}</h2>
+      <h2>${httpMethodName(documentedEndpoint.endpoint.method)} ${documentedEndpoint.endpoint.path}</h2>
       <p>${documentedEndpoint.description}</p>
     """
+  }
 
 }
