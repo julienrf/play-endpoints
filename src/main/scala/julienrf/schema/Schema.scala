@@ -1,27 +1,20 @@
 package julienrf.schema
 
-import play.api.libs.json.Reads
+import julienrf.formats.{FormatArray, FormatValue}
+import play.api.libs.json.{Json, Reads}
 import play.twirl.api._
+import julienrf.formats.FormatValue.Implicits._
 
-case class Schema(id: String, reads: Reads[_], description: String)
+case class Schema(id: String, format: FormatValue, description: String)
 
 object Schema {
-
-
-  def schemaTemplate(schema: Schema) = {
-    html"""
-      {
-        "foo: String,
-        "bar": Int
-      }
-    """
-  }
 
   def documentation(schema: Schema): Html =
     html"""
       <h2><a name='${schema.id}'>${schema.id}</a></h2>
       <p>Description: ${schema.description}</p>
       <p>Content-Type: application/json </p>
-      <p>Schema: ${schemaTemplate(schema)}</p>
+      <p>Schema:</p>
+      <pre>${Json.prettyPrint(schema.format)}</pre>
     """
 }

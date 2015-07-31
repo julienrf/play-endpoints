@@ -1,9 +1,10 @@
 package julienrf.endpoints
 
 import julienrf.schema.{Schema}
-import play.api.libs.json._
 import play.api.mvc.{Controller, Action}
 import play.twirl.api.StringInterpolation
+import julienrf.formats.FormatValue._
+import julienrf.formats.FormatValue.Implicits._
 
 object Example extends Controller {
 
@@ -37,7 +38,10 @@ object Example extends Controller {
 
   lazy val helloSchema = Schema(
     id = "helloSchema",
-    reads = (__ \ "msg").read[String],
+    format = obj(
+      "msg" as string whichMeans "The content of the message",
+      "sender" as string whichMeans "The name of the sender"
+    ),
     description = "The schema of a hello message")
 
   lazy val schemasDoc =
