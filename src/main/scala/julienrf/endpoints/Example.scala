@@ -10,7 +10,7 @@ object Example extends Controller {
       "My first endpoint",
       Endpoint(Get, "/foo",
         Action(
-          Ok(html"<a href='${Endpoint.reverseRouter(foo.endpoint)}'>reverse routed link to the 'foo' endpoint</a> and a link to the <a href='${Endpoint.reverseRouter(doc.endpoint)}'>doc</a>")
+          Ok(html"<a href='${Endpoint.reverseRouter(foo.endpoint)._2}'>reverse routed link to the 'foo' endpoint</a> and a link to the <a href='${Endpoint.reverseRouter(doc.endpoint)._2}'>doc</a>")
         )
       )
     )
