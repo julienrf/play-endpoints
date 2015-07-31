@@ -4,6 +4,8 @@ import julienrf.endpoints._
 import julienrf.formats.FormatValue.Implicits._
 import julienrf.formats.FormatValue._
 import julienrf.schema.Schema
+import play.api.data.mapping.json.Writes
+import play.api.data.mapping.json.Writes._
 import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 import play.twirl.api.StringInterpolation
@@ -50,19 +52,26 @@ object Example extends Controller {
       Action(parse.json) {
         request =>
           import Format._
+          val errorsW = Writes.seqToJsArray(Writes.errors)
 
-          payload.validate(request.body).asOpt.map {
-            data =>
-              Ok(Json.obj(
-                "msg" -> s"Hello ${(data \ "sender").as[String]}",
+          val result = for {
+            data <- payload.validate(request.body).asEither
+              .left.map(e => BadRequest(errorsW.writes(e))).right
+          } yield {
+            Ok(Json.obj(
+              "msg" -> s"Hello ${(data \ "sender").as[String]}",
               // "msg" -> s"Hello ${(data \ sender)}",
-                "sender" -> s"$name"
-              ))
-          }.getOrElse(BadRequest("request body invalid"))
+              "sender" -> s"$name"
+            ))
+          }
+
+          result.fold(x => x, x => x)
       }
     }
 
   object Format {
+    import julienrf.formats.FormatValue._
+
     val msg = "msg" as string whichMeans "The content of the message"
     val sender = "sender" as string whichMeans "The name of the sender"
     val payload = obj(
