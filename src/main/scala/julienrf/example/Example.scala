@@ -4,6 +4,7 @@ import julienrf.endpoints._
 import julienrf.formats.FormatValue.Implicits._
 import julienrf.formats.FormatValue._
 import julienrf.schema.Schema
+import play.api.libs.json.Json
 import play.api.mvc.{Action, Controller}
 import play.twirl.api.StringInterpolation
 
@@ -46,15 +47,33 @@ object Example extends Controller {
       inputSchema = Some(messageSchema),
       outputSchema = Some(messageSchema)
     ) { name =>
-      Action(Ok(html"<h1>Hello $name</h1>"))
+      Action(parse.json) {
+        request =>
+          import Format._
+
+          payload.validate(request.body).asOpt.map {
+            data =>
+              Ok(Json.obj(
+                "msg" -> s"Hello ${(data \ "sender").as[String]}",
+              // "msg" -> s"Hello ${(data \ sender)}",
+                "sender" -> s"$name"
+              ))
+          }.getOrElse(BadRequest("request body invalid"))
+      }
     }
+
+  object Format {
+    val msg = "msg" as string whichMeans "The content of the message"
+    val sender = "sender" as string whichMeans "The name of the sender"
+    val payload = obj(
+      msg,
+      sender
+    )
+  }
 
   lazy val messageSchema = Schema(
     id = "helloSchema",
-    format = obj(
-      "msg" as string whichMeans "The content of the message",
-      "sender" as string whichMeans "The name of the sender"
-    ),
+    format = Format.payload,
     description = "The schema of a hello message")
 
   lazy val schemasDoc =
