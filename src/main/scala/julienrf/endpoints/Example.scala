@@ -1,5 +1,7 @@
 package julienrf.endpoints
 
+import julienrf.schema.{Schema}
+import play.api.libs.json._
 import play.api.mvc.{Controller, Action}
 import play.twirl.api.StringInterpolation
 
@@ -15,11 +17,11 @@ object Example extends Controller {
 
   lazy val doc: Endpoint[Unit] =
     Endpoint(
-      "Documentation", MethodCodec(Get).concat(PathCodec("/doc")))( _ =>
+      "Documentation", MethodCodec(Get).concat(PathCodec("/doc")))(_ =>
       Action {
         Ok(html"<h1>Example Documentation</h1>${endpoints.map(Endpoint.documentation)}")
       }
-    )
+      )
 
   lazy val form =
     Endpoint("Form submission", MethodCodec(Post).concat(PathCodec("/submit")))(_ => Action(NotImplemented))
@@ -27,11 +29,34 @@ object Example extends Controller {
   lazy val hello =
     Endpoint(
       "Say hello to someone",
-      MethodCodec(Get).concat(PathCodec("/hello")).concat(QueryStringParameterCodec("name", "Name of the person to greet"))
+      MethodCodec(Get).concat(PathCodec("/hello")).concat(QueryStringParameterCodec("name", "Name of the person to greet")),
+      inputSchema = Some(helloSchema)
     ) { name =>
       Action(Ok(html"<h1>Hello $name</h1>"))
     }
 
-  lazy val endpoints = Seq(index, hello, doc, form)
+  lazy val helloSchema = Schema(
+    id = "helloSchema",
+    reads = (__ \ "msg").read[String],
+    description = "The schema of a hello message")
+
+  lazy val schemasDoc =
+    Endpoint(
+      "Schemas Documentation",
+      MethodCodec(Get).concat(PathCodec("/schema")))(_ =>
+      Action {
+        Ok( html"""
+            <h1>Schemas</h1>${schemas.map(Schema.documentation)}
+            """)
+      }
+      )
+
+  def schemaUrl(schema: Schema) = schemasDoc.codec.encode(()).url + s"#${schema.id}"
+
+
+
+  lazy val endpoints = Seq(index, hello, doc, form, schemasDoc)
+
+  lazy val schemas = Seq(helloSchema)
 
 }
