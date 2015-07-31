@@ -10,10 +10,11 @@ Turn endpoint definitions into first class citizens.
 
 ## Roadmap
 
-- [ ] One endpoint, whose path is fixed, e.g. `GET /foo`, with a description
+- [x] One endpoint, whose path is fixed, e.g. `GET /foo`, with a description
 - [ ] Routing
 - [ ] Reverse routing
 - [ ] Abstract documentation
+- [ ] Several HTTP verbs (`GET`, `POST`)
 - [ ] HTML documentation
 - [ ] Two endpoints, with fixed paths, e.g. `GET /foo` and `GET /bar`
 - [ ] Query string _parameters_ of type `String`, with a description
