@@ -109,7 +109,7 @@ case class QueryStringParameterCodec(name: String, description: String) extends 
   def docPath: Option[String] = None
 }
 
-case class Endpoint[A](description: String, codec: RequestCodec[A], inputSchema: Option[Schema] = None)(val handler: A => Handler)
+case class Endpoint[A](description: String, codec: RequestCodec[A], inputSchema: Option[Schema] = None, outputSchema: Option[Schema] = None)(val handler: A => Handler)
 
 /** HTTP methods */
 sealed trait Method
@@ -133,27 +133,4 @@ object Endpoint {
           case endpoint if endpoint.codec.decode(requestHeader).nonEmpty => endpoint.handler(endpoint.codec.decode(requestHeader).get)
         }
     })
-
-  def documentation(endpoint: Endpoint[_]): Html =
-    html"""
-      <h2>${endpoint.codec.docMethod.map(Method.asText).mkString(" or ")} ${endpoint.codec.docPath}</h2>
-      <dl>
-        ${
-          for ((n, d) <- endpoint.codec.docQS) yield
-            html"""
-              <dt>$n</dt><dd>$d</dd>
-            """
-        }
-        ${
-          for(schema <- endpoint.inputSchema) yield
-          html"""
-              <dt>Input schema</dt><dd><a href='${Example.schemaUrl(schema)}'>${schema.id}</a></dd>
-            """
-        }
-      </dl>
-      <p>${endpoint.description}</p>
-    """
-
-
-
 }

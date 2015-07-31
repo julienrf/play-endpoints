@@ -1,10 +1,11 @@
-package julienrf.endpoints
+package julienrf.example
 
-import julienrf.schema.{Schema}
-import play.api.mvc.{Controller, Action}
-import play.twirl.api.StringInterpolation
-import julienrf.formats.FormatValue._
+import julienrf.endpoints._
 import julienrf.formats.FormatValue.Implicits._
+import julienrf.formats.FormatValue._
+import julienrf.schema.Schema
+import play.api.mvc.{Action, Controller}
+import play.twirl.api.StringInterpolation
 
 object Example extends Controller {
 
@@ -12,7 +13,12 @@ object Example extends Controller {
     Endpoint(
       "My first endpoint", MethodCodec(Get).concat(PathCodec("/"))) { _ =>
       Action {
-        Ok(html"<a href='${index.codec.encode(()).url}'>foo</a>, <a href='${doc.codec.encode(()).url}'>doc</a>, <a href='${hello.codec.encode("Julien").url}'>Hello Julien</a>")
+        Ok(
+          html"""
+            <a href='${index.codec.encode(()).url}'>foo</a>
+            <a href='${doc.codec.encode(()).url}'>doc</a>,
+            <a href='${hello.codec.encode("Julien").url}'>Hello Julien</a>"""
+        )
       }
     }
 
@@ -20,7 +26,13 @@ object Example extends Controller {
     Endpoint(
       "Documentation", MethodCodec(Get).concat(PathCodec("/doc")))(_ =>
       Action {
-        Ok(html"<h1>Example Documentation</h1>${endpoints.map(Endpoint.documentation)}")
+        Ok(Demo.render(
+          html"""
+            <div class="jumbotron">
+            <h1>Example Documentation</h1>
+            </div>
+            ${endpoints.map(Demo.documentation)}
+            """))
       }
       )
 
@@ -30,13 +42,14 @@ object Example extends Controller {
   lazy val hello =
     Endpoint(
       "Say hello to someone",
-      MethodCodec(Get).concat(PathCodec("/hello")).concat(QueryStringParameterCodec("name", "Name of the person to greet")),
-      inputSchema = Some(helloSchema)
+      MethodCodec(Post).concat(PathCodec("/hello")).concat(QueryStringParameterCodec("name", "Name of the person to greet")),
+      inputSchema = Some(messageSchema),
+      outputSchema = Some(messageSchema)
     ) { name =>
       Action(Ok(html"<h1>Hello $name</h1>"))
     }
 
-  lazy val helloSchema = Schema(
+  lazy val messageSchema = Schema(
     id = "helloSchema",
     format = obj(
       "msg" as string whichMeans "The content of the message",
@@ -49,9 +62,9 @@ object Example extends Controller {
       "Schemas Documentation",
       MethodCodec(Get).concat(PathCodec("/schema")))(_ =>
       Action {
-        Ok( html"""
-            <h1>Schemas</h1>${schemas.map(Schema.documentation)}
-            """)
+        Ok( Demo.render(html"""
+            <h1>Schemas</h1>${schemas.map(Demo.schemaTemplate)}
+            """))
       }
       )
 
@@ -61,6 +74,6 @@ object Example extends Controller {
 
   lazy val endpoints = Seq(index, hello, doc, form, schemasDoc)
 
-  lazy val schemas = Seq(helloSchema)
+  lazy val schemas = Seq(messageSchema)
 
 }

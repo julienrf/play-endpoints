@@ -1,5 +1,6 @@
 package julienrf.endpoints
 
+import julienrf.example.Example
 import play.api.routing.Router
 import play.api.{BuiltInComponentsFromContext, Application, ApplicationLoader}
 import play.api.ApplicationLoader.Context
