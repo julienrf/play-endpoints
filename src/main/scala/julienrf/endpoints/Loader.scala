@@ -8,9 +8,7 @@ class Loader extends ApplicationLoader {
   def load(context: Context): Application =
     new BuiltInComponentsFromContext(context) {
 
-      val example = new Example
-
-      def router: Router = Endpoint.router(example.foo.endpoint)
+      def router: Router = Endpoint.router(Example.foo.endpoint)
 
     }.application
 }

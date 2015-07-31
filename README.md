@@ -12,7 +12,7 @@ Turn endpoint definitions into first class citizens.
 
 - [x] One endpoint, whose path is fixed, e.g. `GET /foo`, with a description
 - [x] Routing
-- [ ] Reverse routing
+- [x] Reverse routing
 - [ ] Abstract documentation
 - [ ] Several HTTP verbs (`GET`, `POST`)
 - [ ] HTML documentation
