@@ -14,7 +14,7 @@ object Example extends Controller {
 
   lazy val index: Endpoint[Unit] =
     Endpoint(
-      "My first endpoint", MethodCodec(Get).concat(PathCodec("/"))) { _ =>
+      "My first endpoint", RequestCodec(Get, PathCodec.Const("/"))) { _ =>
       Action {
         Ok(
           html"""
@@ -27,7 +27,7 @@ object Example extends Controller {
 
   lazy val doc: Endpoint[Unit] =
     Endpoint(
-      "Documentation", MethodCodec(Get).concat(PathCodec("/doc")))(_ =>
+      "Documentation", RequestCodec(Get, PathCodec.Const("/doc")))(_ =>
       Action {
         Ok(Demo.render(
           html"""
@@ -40,12 +40,12 @@ object Example extends Controller {
       )
 
   lazy val form =
-    Endpoint("Form submission", MethodCodec(Post).concat(PathCodec("/submit")))(_ => Action(NotImplemented))
+    Endpoint("Form submission", RequestCodec(Post, PathCodec.Const("/submit")))(_ => Action(NotImplemented))
 
   lazy val hello =
     Endpoint(
       "Say hello to someone",
-      MethodCodec(Post).concat(PathCodec("/hello")).concat(QueryStringParameterCodec("name", "Name of the person to greet")),
+      RequestCodec(Post, PathCodec.Const("/hello"), QueryStringCodec.Parameter("name"/*, "Name of the person to greet"*/)),
       inputSchema = Some(messageSchema),
       outputSchema = Some(messageSchema)
     ) { name =>
@@ -88,7 +88,7 @@ object Example extends Controller {
   lazy val schemasDoc =
     Endpoint(
       "Schemas Documentation",
-      MethodCodec(Get).concat(PathCodec("/schema")))(_ =>
+      RequestCodec(Get, PathCodec.Const("/schema")))(_ =>
       Action {
         Ok( Demo.render(html"""
             <h1>Schemas</h1>${schemas.map(Demo.schemaTemplate)}

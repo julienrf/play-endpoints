@@ -26,8 +26,8 @@ object Demo {
     """
   }
 
-  def documentation(endpoint: Endpoint[_]): Html =
-    html"""
+  def documentation(endpoint: Endpoint[_]): Html = html""
+/*    html"""
       <div class="panel">
       <h2>${endpoint.codec.docMethod.map(Method.asText).mkString(" or ")} ${endpoint.codec.docPath}</h2>
       <dl>
@@ -53,7 +53,7 @@ object Demo {
       </dl>
       <p>${endpoint.description}</p>
       </div>
-    """
+    """*/
 
   def schemaTemplate(schema: Schema): Html =
     html"""

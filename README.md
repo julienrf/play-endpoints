@@ -18,7 +18,7 @@ Turn endpoint definitions into first class citizens.
 - [x] Several HTTP verbs (`GET`, `POST`)
 - [x] Two endpoints, with fixed paths, e.g. `GET /foo` and `GET /bar`
 - [x] Query string _parameters_ of type `String`, with a description
-- [ ] Path _parameters_
+- [x] Path _parameters_
 - [ ] Parameters of any type
 - [ ] Request body schema (i.e. model an endpoint as an `A => Unit` value)
 - [ ] Response body schema (i.e. model an endpoint as an `A => Future[B]` value)
