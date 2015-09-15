@@ -42,8 +42,8 @@ object PathCodec {
     }
   }
 
-  def documentation(pathCodec2: PathCodec[_]): String =
-    pathCodec2 match {
+  def documentation(pathCodec: PathCodec[_]): String =
+    pathCodec match {
       case Const(part) => part
       case Segment(ident) => ":" ++ ident
       case AndThen(codecA, codecB) => documentation(codecA) ++ "/" ++ documentation(codecB)

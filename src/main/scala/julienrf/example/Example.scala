@@ -18,7 +18,7 @@ object Example extends Controller {
       Action {
         Ok(
           html"""
-            <a href='${index.codec.encode(()).url}'>foo</a>
+            <a href='${index.codec.encode(()).url}'>index</a>
             <a href='${doc.codec.encode(()).url}'>doc</a>,
             <a href='${hello.codec.encode("Julien").url}'>Hello Julien</a>"""
         )

@@ -32,10 +32,7 @@ object RequestCodec {
   case class MethodPathQueryStringCodec[A, B, Out](method: Method, pathCodec: PathCodec[A], qsCodec: QueryStringCodec[B])(implicit fc: FlatConcat.Aux[A, B, Out]) extends RequestCodec[Out] {
     def decode(requestHeader: RequestHeader): Option[Out] =
       for {
-        _ <- Some(())
-        if requestHeader.method == Method.asText(method)
-        (a, remaining) <- pathCodec.decode(requestHeader.path)
-        if remaining.isEmpty
+        a <- MethodPathCodec(method, pathCodec).decode(requestHeader)
         b <- qsCodec.decode(requestHeader.queryString)
       } yield fc(a, b)
     def encode(out: Out): MethodAndURL = {
@@ -48,7 +45,9 @@ object RequestCodec {
 
 case class MethodAndURL(method: Method, path: String, queryString: Map[String, Seq[String]]) {
   lazy val url: String =
-    path ++
-      queryString.flatMap { case (k, vs) => vs.map(v => URLEncoder.encode(k, "UTF8") ++ "=" ++ URLEncoder.encode(v, "UTF8")) }
-        .mkString("?", "&", "")
+    if (queryString.isEmpty) path else {
+      path ++
+        queryString.flatMap { case (k, vs) => vs.map(v => URLEncoder.encode(k, "UTF8") ++ "=" ++ URLEncoder.encode(v, "UTF8")) }
+          .mkString("?", "&", "")
+    }
 }

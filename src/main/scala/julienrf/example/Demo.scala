@@ -1,5 +1,6 @@
 package julienrf.example
 
+import julienrf.endpoints.RequestCodec.{MethodPathQueryStringCodec, MethodPathCodec}
 import julienrf.endpoints._
 import julienrf.formats.FormatValue.Implicits._
 import julienrf.schema.Schema
@@ -26,34 +27,44 @@ object Demo {
     """
   }
 
-  def documentation(endpoint: Endpoint[_]): Html = html""
-/*    html"""
+  def documentation(endpoint: Endpoint[_]): Html = {
+    val (method, pathCodec, maybeQsCodec) = endpoint.codec match {
+      case MethodPathCodec(m, pc) => (m, pc, None)
+      case MethodPathQueryStringCodec(m, pc, qsc) => (m, pc, Some(qsc))
+    }
+    html"""
       <div class="panel">
-      <h2>${endpoint.codec.docMethod.map(Method.asText).mkString(" or ")} ${endpoint.codec.docPath}</h2>
+      <h2>${Method.asText(method)} ${PathCodec.documentation(pathCodec)}</h2>
       <dl>
-        ${
-      for ((n, d) <- endpoint.codec.docQS) yield {
-        html"""
-              <p><b>$n</b>: $d</p>
-            """
-      }}
+      ${
+        for {
+          qsCodec <- maybeQsCodec.to[Seq]
+          n <- QueryStringCodec.documentation(qsCodec)
+        } yield {
+          html"""
+                <p><b>$n</b></p>
+              """
+        }
+      }
       ${
       for (schema <- endpoint.inputSchema) yield {
         html"""
               <p><b>Input schema</b>: <a href='${Example.schemaUrl(schema)}'>${schema.id}</a></p>
             """
-      }}
+      }
+    }
       ${
       for (schema <- endpoint.outputSchema) yield {
         html"""
               <p><b>Output schema</b>: <a href='${Example.schemaUrl(schema)}'>${schema.id}</a></p>
           """
       }
-      }
+    }
       </dl>
       <p>${endpoint.description}</p>
       </div>
-    """*/
+    """
+  }
 
   def schemaTemplate(schema: Schema): Html =
     html"""

@@ -10,4 +10,7 @@ libraryDependencies += "com.chuusai" %% "shapeless" % "2.2.5"
 
 libraryDependencies ++= Seq(
   "validation-core",
-  "validation-json").map("io.github.jto" %% _ % "1.1")
+  "validation-json"
+).map("io.github.jto" %% _ % "1.1")
+
+scalacOptions += "-feature"
